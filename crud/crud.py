@@ -12,6 +12,7 @@ from schemas.users import Users as SchemaUsers
 from schemas.users import ChanegePass as SchemaChanegePass
 import re
 from models.users import Users
+import bcrypt
 
 load_dotenv(".env")
 app = FastAPI()
@@ -33,6 +34,7 @@ async def create_user(user):
     if not valid_email(user.email):
         raise HTTPException(status_code=406, detail="Email not valid ")
     else:
+        hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
         db_user = ModelUsers(username=user.username, email=user.email, password=hashed_password)
         db.session.add(db_user)
         db.session.commit()
@@ -44,7 +46,8 @@ async def update_password(user_id,new):
     if len(new.new_password) < 5:
         return {'Error': 'Pass must have 5 simbols or more'}
     try:
-        q = update(Users).where(Users.id == user_id).values(password=new.new_password)
+        hashed_password = bcrypt.hashpw(new.new_password.encode('utf-8'), bcrypt.gensalt())
+        q = update(Users).where(Users.id == user_id).values(password=hashed_password)
         db.session.execute(q)
         db.session.commit()
         return HTTPException(

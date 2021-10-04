@@ -30,4 +30,6 @@ typing-extensions==3.10.0.0
 uvicorn==0.14.0
 virtualenv==20.4.7
 virtualenv-clone==0.5.4
-bcrypt
+bcrypt==3.2.0
+asyncio==3.4.3
+FastAPI-SQLAlchemy==0.2.1
